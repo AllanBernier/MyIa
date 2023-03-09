@@ -12,6 +12,8 @@ class Layer:
         self.weight = [[random.random() * 2 - 1 for _ in range(past_layer)]for _ in range(current_layer)]
         self.bias = [random.random() * 2 - 1 for _ in range(current_layer)] 
 
+        self.costGradientW = [[0] * past_layer] * current_layer
+        self.costGradientB = [0] * current_layer
 
     def use(self, input):
         output = [0] * self.current_size
@@ -25,7 +27,11 @@ class Layer:
     
     
     
-    
+    def applyGradient(self, learningRate):
+        for nodeOut in range(self.current_size):
+            self.bias[nodeOut] -= self.costGradientB[nodeOut] * learningRate
+            for nodeIn in range(self.past_size):
+                self.weight[nodeOut][nodeIn] = self.costGradientW[nodeOut][nodeIn] * learningRate
 
 
     def activationFunction(self, weightedInput):
