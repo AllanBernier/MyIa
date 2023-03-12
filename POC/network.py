@@ -1,5 +1,7 @@
 from layer import Layer
-    
+
+from cost import Cost
+
 class NeuralsNetwork:
     
     
@@ -9,23 +11,26 @@ class NeuralsNetwork:
     def __init__(self, neural_size):
         print(neural_size)
         self.len_neural = len(neural_size)
-        self.neural_list = []        
-        self.neural_list.extend(
+        self.layer_list = []        
+        self.layer_list.extend(
             Layer(neural_size[i], neural_size[i - 1])
             for i in range(1, self.len_neural)
         )
         
+    def clasify(self,inputs):
+        outputs = self.calculateOutputs(inputs)
+        return outputs, max(outputs)
         
-    def use(self, inputs):
-        for layer in self.neural_list:
-            inputs = layer.use(inputs)
+    def calculateOutputs(self, inputs):
+        for layer in self.layer_list:
+            inputs = layer.calculateOutputs(inputs)
         return inputs
-        
+	
     
     def pointCost(self, inputs, exceptedOutput):
         output = self.use(inputs)
         return sum(
-            self.costFunction(output[i], exceptedOutput[i])
+            Cost.costFunction(output[i], exceptedOutput[i])
             for i in range(len(output))
         )
 
@@ -40,7 +45,7 @@ class NeuralsNetwork:
         h = 0.0001
         actualCost = self.datasetCost(inputsList, exceptedOutputList)
         
-        for layer in self.neural_list:
+        for layer in self.layer_list:
             for nodeIn in range(layer.past_size):
                 for nodeOut in range(layer.current_size):
                     layer.weight[nodeOut][nodeIn] += h
@@ -56,32 +61,3 @@ class NeuralsNetwork:
             layer.applyGradient(learningRate)
         
     
-    def costFunction(self, output, excepted):
-        return self.meanSquare(output, excepted)
-        
-        
-        
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    # Cost Function
-    def meanSquare(self, output,excepted):
-        error = output- excepted
-        return error*error

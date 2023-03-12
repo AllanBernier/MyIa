@@ -2,6 +2,7 @@
 import math
 import random
 
+from activation import Activation
 
 class Layer:
     
@@ -15,13 +16,30 @@ class Layer:
         self.costGradientW = [[0] * past_layer] * current_layer
         self.costGradientB = [0] * current_layer
 
+
+    def calculateOutputs(self, inputs):
+        weightedInputs = [] * (self.current_size )
+
+        for nodeOut in range(self.current_size):
+            weightedInput = self.bias[nodeOut]
+
+            for nodeIn in range(self.past_size):
+                weightedInput += inputs[nodeIn] * self.weight[nodeIn][nodeOut]
+
+            weightedInputs[nodeOut+1] = weightedInput
+        activations = [] * self.current_size
+        for nodeOut in range(self.current_size):
+            activations[nodeOut ] = Activation.activationFunction(weightedInputs, nodeOut )
+
+        return activations
+
     def use(self, input):
         output = [0] * self.current_size
         for i in range(self.current_size):
             for j in range(self.past_size):
                 output[i] += (input[j] * self.weight[i][j])
             output[i] += self.bias[i]
-            output[i] = self.activationFunction(output[i])
+            output[i] = Activation.activationFunction(output[i])
 
         return output
     
@@ -33,31 +51,3 @@ class Layer:
             for nodeIn in range(self.past_size):
                 self.weight[nodeOut][nodeIn] = self.costGradientW[nodeOut][nodeIn] * learningRate
 
-
-    def activationFunction(self, weightedInput):
-        return self.sigmoid(weightedInput)
-    
-    
-  
-    
-    # Activation Function 
-    def sigmoid(self, weightedInput):
-        if (weightedInput > 100):
-            return 1
-        elif (weightedInput < -100):
-            return 0
-        else:
-            return 1/math.exp(0-weightedInput)
-        
-    def stepFunction(self, weightedInput):
-        return 1 if weightedInput > 0 else 0
-    
-    def HyperbolicTangent(self, weightedInput):
-        a = math.exp(2 * weightedInput)
-        return (a-1)/(a+1)
-    
-    def SiLU(self, weightedInput):
-        return weightedInput / (1 + math.exp(-weightedInput) ) 
-    
-    def ReLu(self, weightedInput):
-        return max(weightedInput, 0)
