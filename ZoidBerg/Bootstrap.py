@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 from tensorflow import keras
 from keras import layers
 
-#CONSTANTES DU PROJET
+#CONSTANTES DU PROJET.
 
 class_names = ['zero','un','deux','trois','quatre','cinq','six','sept','huit','neuf']
 class_names_label = {class_names:i for i, class_names in enumerate(class_names)}
